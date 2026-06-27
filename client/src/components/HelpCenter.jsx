@@ -10,7 +10,6 @@ export const HelpCenter = () => {
       </div>
 
       <div className="help-center-grid">
-        {/* Left Side: Getting Started & Guide */}
         <div>
           <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--primary)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Plus size={18} />
@@ -41,7 +40,6 @@ export const HelpCenter = () => {
           </div>
         </div>
 
-        {/* Right Side: Common Issues & FAQ */}
         <div>
           <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--accent)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <HelpCircle size={18} />

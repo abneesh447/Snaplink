@@ -45,10 +45,9 @@ async function logClickAnalytics(
     const browser = parser.getBrowser().name || 'Unknown';
     const os = parser.getOS().name || 'Unknown';
 
-    // Get country
+    
     const country = await getCountryFromIp(ip);
 
-    // Save click event
     await prisma.click.create({
       data: {
         linkId,
@@ -63,11 +62,10 @@ async function logClickAnalytics(
   }
 }
 
-// Redirect handler
 router.get('/:code', async (req, res) => {
   const { code } = req.params;
   const userAgent = req.headers['user-agent'] || '';
-  // Resolve client IP (supporting reverse proxies)
+
   const ip =
     req.headers['x-forwarded-for']?.split(',')[0].trim() ||
     req.socket.remoteAddress ||
@@ -109,7 +107,6 @@ router.get('/:code', async (req, res) => {
       return res.status(404).send(getNotFoundHtml(code));
     }
 
-    // 3. Expiration Check
     if (link.expiration && new Date(link.expiration) <= new Date()) {
       return res.status(410).send(getExpiredHtml(link.shortCode));
     }
@@ -117,13 +114,12 @@ router.get('/:code', async (req, res) => {
     // 4. Cache the link details
     const ttl = link.expiration
       ? Math.floor((new Date(link.expiration).getTime() - Date.now()) / 1000)
-      : 86400; // Default 1 day caching
+      : 86400; 
 
     if (ttl > 0) {
       await cache.set(`link:${code}`, link.originalUrl, ttl);
     }
 
-    // 5. Asynchronously log analytics
     logClickAnalytics(link.id, ip, userAgent);
 
     // 6. Perform redirection

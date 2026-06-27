@@ -43,8 +43,8 @@ app.use((err, req, res, next) => {
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
-    console.log(`🚀 Server running on port ${port}`);
-    console.log(`🔗 API endpoints ready at http://localhost:${port}/api`);
+    console.log(` Server running on port ${port}`);
+    console.log(` API endpoints ready at http://localhost:${port}/api`);
   });
 }
 

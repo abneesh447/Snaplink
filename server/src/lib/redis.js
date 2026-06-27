@@ -45,21 +45,21 @@ if (redisUrl) {
     });
 
     redisClient.on('error', (err) => {
-      console.warn('⚠️ Redis error. Falling back to in-memory cache:', err.message);
+      console.warn(' Redis error. Falling back to in-memory cache:', err.message);
       cacheStore = new InMemoryCache();
     });
 
     redisClient.on('connect', () => {
-      console.log('🔌 Connected to Redis successfully.');
+      console.log(' Connected to Redis successfully.');
     });
 
     cacheStore = redisClient;
   } catch (err) {
-    console.warn('⚠️ Redis connection failed. Using in-memory cache:', err);
+    console.warn(' Redis connection failed. Using in-memory cache:', err);
     cacheStore = new InMemoryCache();
   }
 } else {
-  console.log('ℹ️ No REDIS_URL provided. Using in-memory cache.');
+  console.log('No REDIS_URL provided. Using in-memory cache.');
   cacheStore = new InMemoryCache();
 }
 
@@ -81,7 +81,7 @@ export const cache = {
     } catch {
       // In-memory fallback if Redis client fails mid-execution
       if (cacheStore !== redisClient) return;
-      console.warn('⚠️ Redis operation failed, falling back to in-memory.');
+      console.warn('Redis operation failed, falling back to in-memory.');
       cacheStore = new InMemoryCache();
       await cacheStore.set(key, value, ttlSeconds);
     }

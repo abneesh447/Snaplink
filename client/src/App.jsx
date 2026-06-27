@@ -24,7 +24,6 @@ export default function App() {
       
       {/* SIGNED OUT: LANDING AND LANDING HEADER */}
       <SignedOut>
-        {/* NAVBAR */}
         <header
           style={{
             borderBottom: '1px solid var(--border-color)',
@@ -140,7 +139,6 @@ export default function App() {
             </SignInButton>
           </div>
 
-          {/* Core Feature Bento-Card grid */}
           <div className="features-grid">
             <div className="bento-card" style={{ textAlign: 'left' }}>
               <div
@@ -210,11 +208,9 @@ export default function App() {
           </div>
         </div>
 
-        {/* FOOTER */}
         <Footer variant="landing" />
       </SignedOut>
 
-      {/* SIGNED IN: CORE APPLICATION */}
       <SignedIn>
         <Dashboard theme={theme} setTheme={setTheme} />
       </SignedIn>

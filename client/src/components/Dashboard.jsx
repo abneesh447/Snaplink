@@ -136,7 +136,7 @@ export default function Dashboard({ theme, setTheme }) {
     const fullUrl = `${API_URL}/${shortCode}`;
     navigator.clipboard.writeText(fullUrl);
     setCopiedCode(shortCode);
-    showToast('Copied short link to clipboard! 📋');
+    showToast('Copied short link to clipboard! ');
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
@@ -174,8 +174,8 @@ export default function Dashboard({ theme, setTheme }) {
       
       setLinks([data, ...links]);
       setSelectedLinkId(data.id);
-      showToast('Link shortened successfully! 🚀');
-      setActiveTab('links'); // Redirect to table tab on mobile
+      showToast('Link shortened successfully! ');
+      setActiveTab('links'); 
     } catch (err) {
       setFormError(err.message || 'An error occurred.');
     } finally {
@@ -224,7 +224,7 @@ export default function Dashboard({ theme, setTheme }) {
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-    showToast('Exported report successfully! 📥');
+    showToast('Exported report successfully!');
   };
 
   const analytics = useMemo(() => {

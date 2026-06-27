@@ -13,7 +13,7 @@ COPY . .
 # Generate Prisma Client
 RUN npx prisma generate
 
-# Production Runner
+
 FROM node:20-alpine AS runner
 
 WORKDIR /usr/src/app
