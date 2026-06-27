@@ -35,9 +35,10 @@ class InMemoryCache {
 let redisClient = null;
 let cacheStore;
 
-const redisUrl = process.env.REDIS_URL;
+let redisUrl = process.env.REDIS_URL;
 
 if (redisUrl) {
+  redisUrl = redisUrl.trim().replace(/^["']|["']$/g, '');
   try {
     redisClient = new Redis(redisUrl, {
       maxRetriesPerRequest: 1,
