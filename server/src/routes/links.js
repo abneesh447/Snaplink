@@ -6,7 +6,6 @@ import { rateLimiter } from '../middleware/rate-limiter.js';
 
 const router = Router();
 
-// Base-62 random generator for short code
 function generateShortCode(length = 6) {
   const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
@@ -16,7 +15,6 @@ function generateShortCode(length = 6) {
   return result;
 }
 
-// Create a new shortened link
 router.post(
   '/',
   requireAuth(),
@@ -37,7 +35,6 @@ router.post(
       return res.status(400).json({ error: 'Original URL is required.' });
     }
 
-    // URL validation
     try {
       new URL(originalUrl);
     } catch (e) {
@@ -47,7 +44,7 @@ router.post(
     let shortCode = customAlias ? customAlias.trim() : '';
 
     if (shortCode) {
-      // Validate custom alias characters
+
       const aliasRegex = /^[a-zA-Z0-9-_]+$/;
       if (!aliasRegex.test(shortCode)) {
         return res.status(400).json({
@@ -55,7 +52,6 @@ router.post(
         });
       }
 
-      // Check if custom alias is already in use
       const existingLink = await prisma.link.findUnique({
         where: { shortCode },
       });
@@ -64,7 +60,7 @@ router.post(
         return res.status(400).json({ error: 'Custom alias is already in use.' });
       }
     } else {
-      // Generate a unique short code
+
       let isUnique = false;
       let retries = 0;
       while (!isUnique && retries < 5) {
@@ -108,8 +104,6 @@ router.post(
         },
       });
 
-      // Cache the shortCode mapping to Redis immediately to speed up the first lookup
-      // Cache with expiration if defined, otherwise cache for a reasonable default (e.g. 24 hours)
       const ttl = expirationDate
         ? Math.floor((expirationDate.getTime() - Date.now()) / 1000)
         : 86400; // 1 day
@@ -126,7 +120,6 @@ router.post(
   }
 );
 
-// Fetch all links created by the logged in user
 router.get('/', requireAuth(), async (req, res) => {
   const userId = typeof req.auth === 'function' ? req.auth()?.userId : req.auth?.userId;
 
@@ -152,7 +145,6 @@ router.get('/', requireAuth(), async (req, res) => {
   }
 });
 
-// Delete a link
 router.delete('/:id', requireAuth(), async (req, res) => {
   const userId = typeof req.auth === 'function' ? req.auth()?.userId : req.auth?.userId;
   const { id } = req.params;
@@ -174,7 +166,6 @@ router.delete('/:id', requireAuth(), async (req, res) => {
       where: { id },
     });
 
-    // Remove from cache
     await cache.del(`link:${link.shortCode}`);
 
     return res.json({ success: true, message: 'Link deleted successfully.' });

@@ -45,8 +45,7 @@ export default function Dashboard({ theme, setTheme }) {
   const [selectedLinkId, setSelectedLinkId] = useState(() => {
     return localStorage.getItem('snaplink_selectedLinkId') || null;
   });
-  
-  // Navigation Tabs State (primarily for mobile view filter)
+
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem('snaplink_activeTab') || 'links';
   });
@@ -61,7 +60,6 @@ export default function Dashboard({ theme, setTheme }) {
     if (activeTab) localStorage.setItem('snaplink_activeTab', activeTab);
   }, [activeTab]);
 
-  // Form State
   const [originalUrl, setOriginalUrl] = useState('');
   const [customAlias, setCustomAlias] = useState('');
   const [expiration, setExpiration] = useState('');
@@ -69,26 +67,19 @@ export default function Dashboard({ theme, setTheme }) {
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
 
-  // UI Toast & Modal
   const [copiedCode, setCopiedCode] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
   const [activeQrUrl, setActiveQrUrl] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
-  // Chart Zoom Level State (1 to 4)
   const [zoomLevel, setZoomLevel] = useState(1);
 
-  // Analytics Detailed Breakdown state
   const [showDetailedBreakdown, setShowDetailedBreakdown] = useState(false);
 
-
-
-  // Reset zoom level on timeRange changes
   useEffect(() => {
     setZoomLevel(1);
   }, [timeRange]);
 
-  // Fetch Links
   const fetchLinks = async (showRefresher = false) => {
     if (showRefresher) setRefreshing(true);
     else setLoading(true);
@@ -109,7 +100,7 @@ export default function Dashboard({ theme, setTheme }) {
       setLinks(data);
       if (data.length > 0) {
         const storedId = localStorage.getItem('snaplink_selectedLinkId');
-        // Check if the stored/selected link still exists in the fetched database
+
         const linkExists = storedId && data.some(link => link.id === storedId);
         if (!linkExists) {
           setSelectedLinkId(data[0].id);
@@ -130,7 +121,6 @@ export default function Dashboard({ theme, setTheme }) {
     fetchLinks();
   }, []);
 
-  // Show copy/action notification toast
   const showToast = (msg) => {
     setToastMessage(msg);
     const toast = document.getElementById('dashboard-toast');
@@ -142,7 +132,6 @@ export default function Dashboard({ theme, setTheme }) {
     }
   };
 
-  // Copy Link Helper
   const handleCopy = (shortCode) => {
     const fullUrl = `${API_URL}/${shortCode}`;
     navigator.clipboard.writeText(fullUrl);
@@ -151,7 +140,6 @@ export default function Dashboard({ theme, setTheme }) {
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
-  // Shorten new URL
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormError('');
@@ -195,7 +183,6 @@ export default function Dashboard({ theme, setTheme }) {
     }
   };
 
-  // Delete Link
   const handleDelete = async (id) => {
     try {
       const token = await getToken();
@@ -222,12 +209,10 @@ export default function Dashboard({ theme, setTheme }) {
     }
   };
 
-  // Currently Selected Link details
   const selectedLink = useMemo(() => {
     return links.find((link) => link.id === selectedLinkId) || null;
   }, [links, selectedLinkId]);
 
-  // Export Analytics as JSON
   const handleExport = () => {
     if (!selectedLink) return;
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
@@ -242,21 +227,18 @@ export default function Dashboard({ theme, setTheme }) {
     showToast('Exported report successfully! 📥');
   };
 
-  // Analytics Calculations
   const analytics = useMemo(() => {
     if (!selectedLink) return null;
 
     const nowMs = Date.now();
     const filterDays = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : null;
 
-    // Filter clicks according to selected timeRange for display
     const filteredClicks = selectedLink.clicks.filter((c) => {
       if (filterDays === null) return true;
       const ts = new Date(c.timestamp).getTime();
       return ts >= nowMs - filterDays * 24 * 60 * 60 * 1000;
     });
 
-    // Trend analysis: compare current period vs prior period
     const trendDays = timeRange === '7d' ? 7 : 30;
     const currentPeriodStartMs = nowMs - trendDays * 24 * 60 * 60 * 1000;
     const previousPeriodStartMs = nowMs - 2 * trendDays * 24 * 60 * 60 * 1000;
@@ -271,7 +253,6 @@ export default function Dashboard({ theme, setTheme }) {
       return ts >= previousPeriodStartMs && ts < currentPeriodStartMs;
     });
 
-    // 1. Total Clicks Change Calculation
     const currentClicksCount = currentPeriodClicks.length;
     const previousClicksCount = previousPeriodClicks.length;
     let totalClicksChange = 0;
@@ -281,7 +262,6 @@ export default function Dashboard({ theme, setTheme }) {
       totalClicksChange = 100.0;
     }
 
-    // 2. Unique Visitors Change Calculation
     const currentUniqueIps = new Set(currentPeriodClicks.map((c) => c.ip));
     const previousUniqueIps = new Set(previousPeriodClicks.map((c) => c.ip));
     const currentVisitorsCount = currentUniqueIps.size;
@@ -293,7 +273,6 @@ export default function Dashboard({ theme, setTheme }) {
       uniqueVisitorsChange = 100.0;
     }
 
-    // 3. CTR Change Calculation
     const currentCtrVal = currentClicksCount > 0 ? (currentVisitorsCount / currentClicksCount) * 10 : 0;
     const previousCtrVal = previousClicksCount > 0 ? (previousVisitorsCount / previousClicksCount) * 10 : 0;
     let ctrChange = 0;
@@ -327,7 +306,6 @@ export default function Dashboard({ theme, setTheme }) {
         .slice(0, 4);
     };
 
-    // click groups (Desktop vs Mobile splits)
     const daysToShow = timeRange === '7d' ? 7 : timeRange === '30d' ? 15 : 30;
     const dailyDesktop = {};
     const dailyMobile = {};
@@ -379,7 +357,6 @@ export default function Dashboard({ theme, setTheme }) {
     };
   }, [selectedLink, timeRange]);
 
-  // SVG Chart path compiler for Dual Line (Desktop vs Mobile)
   const svgChartPaths = useMemo(() => {
     if (!analytics || !analytics.chartData.length) return null;
     const data = analytics.chartData;
@@ -425,11 +402,9 @@ export default function Dashboard({ theme, setTheme }) {
     };
   }, [analytics, zoomLevel, timeRange]);
 
-  // Determine which pulsing spots to render on geographic distribution map
   const activeMapHotspots = useMemo(() => {
     if (!analytics || !analytics.countries.length) return [];
-    
-    // Coordinates representing countries in SVG/container
+
     const countryCoords = {
       'United States': { top: '28.9%', left: '23.1%' },
       'Canada': { top: '18.9%', left: '20.6%' },
@@ -465,7 +440,6 @@ export default function Dashboard({ theme, setTheme }) {
       .filter((item) => item !== null);
   }, [analytics]);
 
-  // Dynamic live active users simulation
   const [liveActiveUsers, setLiveActiveUsers] = useState(0);
 
   useEffect(() => {
@@ -490,14 +464,12 @@ export default function Dashboard({ theme, setTheme }) {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex' }}>
-      
-      {/* Toast Notification */}
+
       <div id="dashboard-toast" className="toast">
         <Check size={16} style={{ color: 'var(--success)' }} />
         <span>{toastMessage}</span>
       </div>
 
-      {/* QR Code Modal */}
       <div className={`modal-overlay ${activeQrUrl ? 'show' : ''}`} onClick={() => setActiveQrUrl(null)}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <h3 style={{ marginBottom: '12px', fontWeight: 600, fontSize: '18px' }}>QR Code Generated</h3>
@@ -526,7 +498,6 @@ export default function Dashboard({ theme, setTheme }) {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
       <div className={`modal-overlay ${deleteConfirmId ? 'show' : ''}`} onClick={() => setDeleteConfirmId(null)}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <h3 style={{ marginBottom: '12px', fontWeight: 600, fontSize: '18px', color: 'var(--error)' }}>Confirm Deletion</h3>
@@ -555,7 +526,6 @@ export default function Dashboard({ theme, setTheme }) {
         </div>
       </div>
 
-      {/* DESKTOP SIDEBAR NAVIGATION */}
       <aside className="sidebar">
         <div className="px-2" style={{ marginBottom: '32px' }}>
           <span className="sidebar-logo">SnapLink</span>
@@ -643,9 +613,8 @@ export default function Dashboard({ theme, setTheme }) {
         </div>
       </aside>
 
-      {/* MAIN CONTAINER */}
       <main className="main-content" style={{ flex: 1 }}>
-        {/* TOP ROUTING PATHWAY & HEADER */}
+
         {activeTab !== 'help' && (
           <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px', flexWrap: 'wrap', gap: '20px' }}>
             <div>
@@ -721,7 +690,6 @@ export default function Dashboard({ theme, setTheme }) {
           </header>
         )}
 
-        {/* 4 KPI CARD METRICS */}
         {activeTab !== 'help' && (analytics ? (
           <section className="kpi-grid">
             <div className="bento-card">
@@ -777,7 +745,7 @@ export default function Dashboard({ theme, setTheme }) {
                 Created: {new Date(selectedLink.createdAt).toLocaleDateString()}
               </p>
               <div style={{ display: 'flex', marginTop: '12px', marginLeft: '6px' }}>
-                {/* Visual mockup of active team logs */}
+
                 <div style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', backgroundColor: '#e2e8f0', overflow: 'hidden', zIndex: 3 }}>
                   <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAprAPInoiFa_uZJpfLjK7BpX2cXgTmi7I6UHvTPgBZ4-RQs0IxYRaq0YaMjzgfDouQl3A7ZNvMFHGDDcmK19vBMiwO8TiMxH_7mowhPj8n28UO6kkyGTY1bqvSaPA_GMQGqYJEcVSMrDNMg3kFX8DVPmuaGYHaJ8Aftk5OVedWv9cl0lL7wX7YB8FxogUBIu-YTD0s5DrLRuD8-yJYEzNR0a3nJB5yQZUsvqN9XD0xpGnLPGKQqxHkB8s1AokFKByR_FRWJACCtoHv" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Avatar 1" />
                 </div>
@@ -792,7 +760,7 @@ export default function Dashboard({ theme, setTheme }) {
           </section>
         ) : (
           <section className="kpi-grid">
-            {/* Loading / Empty KPI Mockup cards */}
+
             {[1, 2, 3, 4].map((idx) => (
               <div key={idx} className="bento-card" style={{ height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', fontSize: '14px' }}>
                 No link selected
@@ -801,10 +769,8 @@ export default function Dashboard({ theme, setTheme }) {
           </section>
         ))}
 
-        {/* MAIN BENTO LAYOUT BLOCKS */}
         <div className="analytics-grid">
-          
-          {/* LEFT: CLICKS OVER TIME LINE CHART */}
+
           {activeTab !== 'shorten' && activeTab !== 'help' && (
             <div className="bento-card" style={{ display: 'flex', flexDirection: 'column', gridColumn: 'span 12', padding: '24px 12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '8px' }}>
@@ -813,7 +779,7 @@ export default function Dashboard({ theme, setTheme }) {
                   <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Real-time traffic logs segmented by channel</p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  {/* Interactive Multi-Zoom Controls */}
+
                   {analytics && (timeRange === '30d' || timeRange === 'all') && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <button
@@ -837,7 +803,6 @@ export default function Dashboard({ theme, setTheme }) {
                     </div>
                   )}
 
-                  {/* Legends */}
                   <div style={{ display: 'flex', gap: '16px', fontSize: '13px' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span style={{ width: '12px', height: '12px', borderRadius: '3px', backgroundColor: 'var(--primary)' }}></span>
@@ -864,7 +829,7 @@ export default function Dashboard({ theme, setTheme }) {
                       height={svgChartPaths.height}
                       style={{ display: 'block', overflow: 'visible' }}
                     >
-                      {/* Grid Lines */}
+
                       {[0, 1, 2, 3, 4].map((gridIdx) => {
                         const y = 40 + gridIdx * 55;
                         return (
@@ -880,7 +845,6 @@ export default function Dashboard({ theme, setTheme }) {
                         );
                       })}
 
-                      {/* Line 1: Desktop (Solid Blue) */}
                       <path
                         d={svgChartPaths.desktopPath}
                         fill="none"
@@ -889,7 +853,6 @@ export default function Dashboard({ theme, setTheme }) {
                         strokeLinecap="round"
                       />
 
-                      {/* Line 2: Mobile (Dashed Light Blue) */}
                       <path
                         d={svgChartPaths.mobilePath}
                         fill="none"
@@ -899,7 +862,6 @@ export default function Dashboard({ theme, setTheme }) {
                         strokeLinecap="round"
                       />
 
-                      {/* Interactive Tooltip Node mockup */}
                       {svgChartPaths.desktopPoints.length > 1 && (
                         <circle
                           cx={svgChartPaths.desktopPoints[svgChartPaths.desktopPoints.length - 1].x}
@@ -910,7 +872,6 @@ export default function Dashboard({ theme, setTheme }) {
                         />
                       )}
 
-                      {/* Date labels rendered directly inside the SVG at bottom of grid */}
                       {svgChartPaths.desktopPoints.map((p, idx) => {
                         let anchor = "middle";
                         if (idx === 0) anchor = "start";
@@ -936,7 +897,6 @@ export default function Dashboard({ theme, setTheme }) {
             </div>
           )}
 
-          {/* RIGHT: TOP REFERRERS CARD (OR BROWSER LOGS) */}
           {activeTab !== 'shorten' && (activeTab === 'links' || (activeTab === 'analytics' && !showDetailedBreakdown)) && (
             <div className="bento-card" style={{ gridColumn: 'span 12' }}>
               <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '4px' }}>Top Referrers</h2>
@@ -988,7 +948,6 @@ export default function Dashboard({ theme, setTheme }) {
             </div>
           )}
 
-          {/* DETAILED DEVICES BREAKDOWN: BROWSERS & OS SIDE-BY-SIDE */}
           {activeTab === 'analytics' && showDetailedBreakdown && analytics && (
             <div className="bento-card" style={{ gridColumn: 'span 12' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '8px' }}>
@@ -1007,7 +966,7 @@ export default function Dashboard({ theme, setTheme }) {
               </div>
 
               <div className="device-grid">
-                {/* Left Column: Browsers */}
+
                 <div>
                   <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Monitor size={16} style={{ color: 'var(--primary)' }} />
@@ -1032,7 +991,6 @@ export default function Dashboard({ theme, setTheme }) {
                   </div>
                 </div>
 
-                {/* Right Column: Operating Systems */}
                 <div>
                   <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Smartphone size={16} style={{ color: 'var(--accent)' }} />
@@ -1060,7 +1018,6 @@ export default function Dashboard({ theme, setTheme }) {
             </div>
           )}
 
-          {/* FULL WIDTH / WIDE BENTO: GEOGRAPHIC WORLD MAP */}
           {activeTab === 'analytics' && analytics && (
             <div className="bento-card" style={{ gridColumn: 'span 12' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -1087,7 +1044,6 @@ export default function Dashboard({ theme, setTheme }) {
                   }}
                 />
 
-                {/* Dynamic Pulsing hotspots overlaid */}
                 {activeMapHotspots.map((spot) => (
                   <div
                     key={spot.name}
@@ -1100,7 +1056,6 @@ export default function Dashboard({ theme, setTheme }) {
                   </div>
                 ))}
 
-                {/* Map Overlay Stats */}
                 <div className="geo-map-overlay-stats">
                   <p style={{ fontSize: '11px', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '2px' }}>
                     Active Now
@@ -1116,12 +1071,10 @@ export default function Dashboard({ theme, setTheme }) {
             </div>
           )}
 
-          {/* HELP CENTER VIEW TAB */}
           {activeTab === 'help' && (
             <HelpCenter />
           )}
 
-          {/* TABLE PANEL: YOUR SHORTENED LINKS */}
           {activeTab === 'links' && (
             <div className="bento-card table-panel" style={{ gridColumn: 'span 8' }}>
               <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '20px' }}>Your Shortened Links</h2>
@@ -1233,7 +1186,6 @@ export default function Dashboard({ theme, setTheme }) {
             </div>
           )}
 
-          {/* CREATE LINK FORM CARD (SHORTENER TOOL) */}
           {(activeTab === 'links' || activeTab === 'shorten') && (
             <div className="bento-card shortener-panel" style={{ gridColumn: activeTab === 'shorten' ? 'span 12' : 'span 4' }}>
               <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1303,12 +1255,10 @@ export default function Dashboard({ theme, setTheme }) {
 
         </div>
 
-        {/* DASHBOARD CONSOLE FOOTER */}
         <Footer />
 
       </main>
 
-      {/* MOBILE BOTTOM NAVIGATION (Visible only on mobile screen widths) */}
       <nav className="mobile-bottom-nav">
         <button
           className={`mobile-nav-item ${activeTab === 'links' ? 'active' : ''}`}
@@ -1332,8 +1282,7 @@ export default function Dashboard({ theme, setTheme }) {
           <BarChart3 size={20} />
           <span>Stats</span>
         </button>
-        
-        {/* Floating primary plus button in bottom center */}
+
         <div className="mobile-action-btn-wrapper">
           <button
             className="btn-mobile-action"

@@ -77,7 +77,6 @@ body {
   line-height: 1.5;
 }
 
-/* Sidebar Styling */
 .sidebar {
   position: fixed;
   left: 0;
@@ -187,7 +186,6 @@ body {
   transform: scale(0.98);
 }
 
-/* Main Content Area */
 .main-content {
   margin-left: 260px;
   padding: 40px;
@@ -195,7 +193,6 @@ body {
   margin-right: auto;
 }
 
-/* Bento Grid Cards */
 .bento-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
@@ -211,7 +208,6 @@ body {
   box-shadow: var(--card-hover-shadow);
 }
 
-/* Stats Cards Grid */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -278,7 +274,6 @@ body {
   margin-top: 4px;
 }
 
-/* Dynamic Bento Section Blocks */
 .analytics-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -286,7 +281,6 @@ body {
   margin-bottom: 24px;
 }
 
-/* Chart Container and Lines */
 .chart-gradient-bg {
   background: linear-gradient(180deg, rgba(46, 49, 146, 0.04) 0%, rgba(46, 49, 146, 0) 100%);
   border-radius: 12px;
@@ -295,7 +289,6 @@ body {
   position: relative;
 }
 
-/* Forms & Shortener Inputs */
 .shortener-panel {
   margin-bottom: 24px;
 }
@@ -330,7 +323,6 @@ body {
   box-shadow: 0 0 0 3px rgba(46, 49, 146, 0.1);
 }
 
-/* Table Style */
 .table-panel {
   margin-bottom: 24px;
 }
@@ -376,7 +368,6 @@ body {
   background-color: #f8fafc;
 }
 
-/* Custom Progress Bars (for lists) */
 .bar-row {
   margin-bottom: 16px;
 }
@@ -416,7 +407,6 @@ body {
   background-color: var(--text-secondary);
 }
 
-/* Status Indicators */
 .status-indicator {
   display: flex;
   align-items: center;
@@ -454,7 +444,6 @@ body {
   }
 }
 
-/* Buttons */
 .btn-primary {
   background-color: var(--primary);
   color: var(--text-inverse);
@@ -499,7 +488,6 @@ body {
   border-color: var(--text-secondary);
 }
 
-/* Geographics Hotspot Map Wrapper */
 .geo-map-container {
   position: relative;
   width: 100%;
@@ -532,7 +520,6 @@ body {
   min-width: 220px;
 }
 
-/* Pulsing hotspots on Map */
 .map-hotspot {
   position: absolute;
   display: flex;
@@ -572,7 +559,6 @@ body {
   }
 }
 
-/* Mobile Bottom Nav */
 .mobile-bottom-nav {
   position: fixed;
   bottom: 0;
@@ -627,7 +613,6 @@ body {
   transform: scale(0.9);
 }
 
-/* Badges */
 .badge {
   font-size: 12px;
   font-weight: 600;
@@ -648,7 +633,6 @@ body {
   border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
-/* Modals */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -688,7 +672,6 @@ body {
   transform: scale(1);
 }
 
-/* Toasts */
 .toast {
   position: fixed;
   bottom: 24px;
@@ -712,7 +695,6 @@ body {
   opacity: 1;
 }
 
-/* Responsive Grid Definitions */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -734,7 +716,6 @@ body {
   align-items: start;
 }
 
-/* Theme Toggle Trigger Styles */
 .btn-theme-toggle {
   background: transparent;
   border: 1px solid var(--border-color);
@@ -755,12 +736,10 @@ body {
   transform: rotate(15deg);
 }
 
-/* Responsive utilities */
 .show-on-mobile {
   display: none !important;
 }
 
-/* Responsive adjustments */
 @media (max-width: 1200px) {
   .kpi-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -793,8 +772,7 @@ body {
   .kpi-grid {
     grid-template-columns: 1fr;
   }
-  
-  /* Responsive grid layouts override */
+
   .features-grid {
     grid-template-columns: 1fr;
   }
