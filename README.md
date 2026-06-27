@@ -46,6 +46,36 @@ We carefully selected this stack to balance development speed, extreme performan
 
 ---
 
+## 📁 Project File Structure
+
+Here is the directory layout of the LinkTech application:
+
+```
+url_shortener(Snaplink)/
+├── .github/                 # GitHub CI/CD and workflows
+├── client/                  # Frontend Vite + React application
+│   ├── public/              # Static assets (favicons, manifest)
+│   └── src/
+│       ├── assets/          # Shared images, fonts, styles
+│       ├── components/      # UI components (Dashboard, HelpCenter, etc.)
+│       ├── App.css          # App wrapper styling
+│       ├── App.jsx          # Main client entry component
+│       ├── index.css        # Global CSS stylesheet & design variables
+│       └── main.jsx         # Vite bootstrapping script
+├── server/                  # Backend Node.js Express server
+│   ├── prisma/
+│   │   └── schema.prisma    # Prisma Client ORM Schema
+│   └── src/
+│       ├── lib/             # Helper libraries (redis, prisma clients)
+│       ├── middleware/      # Middleware definitions (rate limiter)
+│       ├── routes/          # Express API route files
+│       └── server.js        # Main Express application entrypoint
+├── docker-compose.yml       # Docker configuration for local services
+└── README.md                # Documentation
+```
+
+---
+
 ## 💻 Local Development Setup
 
 ### Prerequisites
