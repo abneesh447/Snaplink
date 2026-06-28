@@ -2,7 +2,7 @@
 
 A high-performance, production-ready URL shortener built with a modern, decoupled architecture. LinkTech provides lightning-fast redirection, robust rate-limiting, and deep geographical and device-level analytics.
 
-![LinkTech Dashboard](https://img.shields.io/badge/Status-Production_Ready-success?style=for-the-badge) ![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge) 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Website-brightgreen?style=for-the-badge)](https://snaplink-three-mocha.vercel.app) 
 
 ---
 
